@@ -52,17 +52,42 @@ async function testChromeBrowser() {
   chromeDriver.quit();
 }
 
-// async function testFireFoxBrowser() {
-//   const fireFoxDriver = new webdriver.Builder().usingServer(`${baseUrl}`).withCapabilities(capabilitiesFirefox).build();
-//   await fireFoxDriver.get('https://duckduckgo.com/');
-// }
+async function testFirefoxBrowser() {
+  const fireFoxDriver = new webdriver.Builder().usingServer(`${baseUrl}`).withCapabilities(capabilitiesFirefox).build();
+  await fireFoxDriver.get('https://duckduckgo.com/');
 
-// async function testIE11Browser() {
-//   const ie11Driver = new webdriver.Builder().usingServer(`${baseUrl}`).withCapabilities(capabilitiesIE11).build();
-//   await ie11Driver.get('https://duckduckgo.com/');
-// }
+  try {
+    await fireFoxDriver.wait(webdriver.until.titleMatches(/DuckDuckGo — Privacy, simplified./i), 5000);
+    console.log(await fireFoxDriver.getTitle());
+    await fireFoxDriver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title contains Duck, Duck, Go!"}}'
+    );
+  } catch (err) {
+    await fireFoxDriver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Page could not load in time"}}'
+    );
+  }
+  fireFoxDriver.quit();
+}
 
-// fireFoxDriver.quit();
-// ie11Driver.quit();
+async function testIE11Browser() {
+  const ie11Driver = new webdriver.Builder().usingServer(`${baseUrl}`).withCapabilities(capabilitiesIE11).build();
+  await ie11Driver.get('https://duckduckgo.com/');
+
+  try {
+    await ie11Driver.wait(webdriver.until.titleMatches(/DuckDuckGo — Privacy, simplified./i), 5000);
+    console.log(await ie11Driver.getTitle());
+    await ie11Driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title contains Duck, Duck, Go!"}}'
+    );
+  } catch (err) {
+    await ie11Driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Page could not load in time"}}'
+    );
+  }
+  ie11Driver.quit();
+}
 
 testChromeBrowser();
+testFirefoxBrowser();
+testIE11Browser();
